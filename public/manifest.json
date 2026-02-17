@@ -1,0 +1,16 @@
+{
+    "name": "Study Flow",
+    "short_name": "Study Flow",
+    "description": "Track your study progress and grind curriculum",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050508",
+    "theme_color": "#050508",
+    "icons": [
+        {
+            "src": "/icons/icon.svg",
+            "sizes": "192x192 512x512",
+            "type": "image/svg+xml"
+        }
+    ]
+}

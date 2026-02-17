@@ -1,0 +1,40 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgb(245, 158, 11)" />
+      <stop offset="100%" stop-color="rgb(249, 115, 22)" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background with more inner breathing space -->
+  <rect
+    x="1"
+    y="1"
+    width="26"
+    height="26"
+    rx="9"
+    ry="9"
+    fill="url(#bgGradient)"
+  />
+
+  <!-- Icon -->
+  <g
+    transform="translate(6 6) scale(0.8)"
+    stroke="rgb(60, 24, 0)"
+    stroke-width="2.2"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M8.517 2.314a1 1 0 0 1 1.966 0l0.951 5.058a2 2 0 0 0 1.594 1.594l5.058 0.951a1 1 0 0 1 0 1.966l-5.058 0.951a2 2 0 0 0-1.594 1.594l-0.951 5.058a1 1 0 0 1-1.966 0l-0.951-5.058a2 2 0 0 0-1.594-1.594l-5.058-0.951a1 1 0 0 1 0-1.966l5.058-0.951a2 2 0 0 0 1.594-1.594z"/>
+    <path d="M16 2v4"/>
+    <path d="M18 4h-4"/>
+    <circle cx="3.5" cy="16.5" r="1.8"/>
+  </g>
+</svg>
