@@ -3,6 +3,7 @@ export interface Lesson {
     title: string;
     status: "pending" | "explained" | "solved" | "done";
     xp: number;
+    completedAt?: string;
 }
 
 export interface Unit {
