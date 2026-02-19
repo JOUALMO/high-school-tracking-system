@@ -34,6 +34,10 @@ export interface WeeklyData {
 }
 
 export interface AppState {
+    ownerUserId: string | null;
+    curriculumId: string | null;
+    curriculumVersion: number | null;
+    curriculumSyncedAt: string | null;
     subjects: Subject[];
     xp: number;
     streak: number;

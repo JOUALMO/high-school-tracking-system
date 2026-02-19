@@ -48,6 +48,10 @@ export function useAppState() {
         await idbSet("state", JSON.stringify(ns));
     }, []);
 
+    const markBackupPending = useCallback(async () => {
+        await idbSet("backup.pending", "1");
+    }, []);
+
     const update = useCallback(
         (updater: Partial<AppState> | ((prev: AppState) => AppState)) => {
             setState((prev) => {
@@ -56,19 +60,26 @@ export function useAppState() {
                         ? (updater as Function)(prev)
                         : { ...prev, ...updater };
                 save(next);
+                markBackupPending();
                 return next;
             });
         },
-        [save]
+        [save, markBackupPending]
     );
 
-    const importState = useCallback(async (data: Partial<AppState>) => {
+    const importState = useCallback(async (
+        data: Partial<AppState>,
+        options?: { markBackupPending?: boolean },
+    ) => {
         const ns = { ...INITIAL, ...data };
         ns.subjects = (ns.subjects || []).map(migrateSubject);
         await idbClear();
         await idbSet("state", JSON.stringify(ns));
+        if (options?.markBackupPending !== false) {
+            await markBackupPending();
+        }
         setState(ns as AppState);
-    }, []);
+    }, [markBackupPending]);
 
     return { state, update, loaded, importState };
 }

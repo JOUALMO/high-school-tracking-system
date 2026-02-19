@@ -40,6 +40,10 @@ export const LEVELS = [
 ];
 
 export const INITIAL: AppState = {
+    ownerUserId: null,
+    curriculumId: null,
+    curriculumVersion: null,
+    curriculumSyncedAt: null,
     subjects: [],
     xp: 0,
     streak: 0,

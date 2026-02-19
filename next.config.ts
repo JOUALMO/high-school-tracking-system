@@ -1,20 +1,25 @@
 import type { NextConfig } from "next";
+import withPWAInit, { runtimeCaching as defaultRuntimeCaching } from "@ducanh2912/next-pwa";
 
-const withPWA = require("@ducanh2912/next-pwa").default({
+const runtimeCaching = defaultRuntimeCaching.filter(
+  (entry) => entry?.options?.cacheName !== "cross-origin",
+);
+
+const withPWA = withPWAInit({
   dest: "public",
   cacheStartUrl: false,
-  skipWaiting: true, // Forces the SW to update immediately
-  swcMinify: true,
   disable: false,
-  swSrc: "src/sw.ts", // Use our custom service worker
   workboxOptions: {
+    skipWaiting: true,
     disableDevLogs: true,
+    runtimeCaching,
   },
 });
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);

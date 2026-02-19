@@ -144,8 +144,9 @@ export function SettingsPanel({
                         lineHeight: 1.7,
                     }}
                 >
-                    All data is stored locally in{" "}
-                    <strong style={{ color: C.indigo }}>IndexedDB</strong> on this device.
+                    Data is cached locally in{" "}
+                    <strong style={{ color: C.indigo }}>IndexedDB</strong> on this device,
+                    and user accounts can sync backups to the server.
                 </p>
                 <div
                     style={{
