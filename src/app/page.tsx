@@ -153,6 +153,7 @@ export default function StudyTracker() {
             }}
           >
             StudyFlow
+            <p style={{ fontSize: 7 }}>By M.JOU</p>
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
