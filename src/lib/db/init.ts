@@ -1,13 +1,10 @@
-import { bootstrapDbStructure, seedDbFilesIfMissing } from "@/lib/db/bootstrap";
+import { connectToMongo } from "@/lib/db/mongoose";
 
 let bootstrapPromise: Promise<void> | null = null;
 
 export async function ensureDbReady(): Promise<void> {
   if (!bootstrapPromise) {
-    bootstrapPromise = (async () => {
-      await bootstrapDbStructure();
-      await seedDbFilesIfMissing();
-    })();
+    bootstrapPromise = connectToMongo().then(() => undefined);
   }
 
   try {

@@ -1,45 +1,38 @@
-import path from "path";
-import { dbPaths } from "@/lib/db/paths";
-import {
-  readJsonFile,
-  withFileWriteLock,
-  writeJsonAtomic,
-  writeJsonAtomicUnlocked,
-} from "@/lib/db/file-store";
 import { HttpError } from "@/lib/api/http-error";
 import { AdminRecord } from "../shared/auth.types";
-
-type EmailIndex = Record<string, string>;
-
-function getAdminFilePath(adminId: string): string {
-  return path.join(dbPaths.adminsById, `${adminId}.json`);
-}
+import { AdminModel } from "@/lib/db/models";
 
 export async function findAdminByEmail(email: string): Promise<AdminRecord | null> {
-  const index = await readJsonFile<EmailIndex>(dbPaths.adminsEmailIndex, {});
-  const adminId = index[email];
+  const admin = await AdminModel.findOne(
+    { email: email.toLowerCase().trim() },
+    { _id: 0 },
+  )
+    .lean<AdminRecord>()
+    .exec();
 
-  if (!adminId) {
+  if (!admin) {
     return null;
   }
 
-  return readJsonFile<AdminRecord | null>(getAdminFilePath(adminId), null);
+  return admin;
 }
 
 export async function createAdmin(record: AdminRecord): Promise<void> {
-  await withFileWriteLock(dbPaths.adminsEmailIndex, async () => {
-    const index = await readJsonFile<EmailIndex>(dbPaths.adminsEmailIndex, {});
-
-    if (index[record.email]) {
+  try {
+    await AdminModel.create({
+      ...record,
+      email: record.email.toLowerCase().trim(),
+    });
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code?: unknown }).code === 11000
+    ) {
       throw new HttpError(409, "Admin email already exists.");
     }
 
-    const nextIndex: EmailIndex = {
-      ...index,
-      [record.email]: record.id,
-    };
-
-    await writeJsonAtomic(getAdminFilePath(record.id), record);
-    await writeJsonAtomicUnlocked(dbPaths.adminsEmailIndex, nextIndex);
-  });
+    throw error;
+  }
 }

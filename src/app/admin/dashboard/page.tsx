@@ -935,7 +935,7 @@ function SystemTab({ routerPush }: { routerPush: (href: string) => void }) {
         <ul style={{ margin: 0, paddingLeft: 18, color: C.muted, fontSize: 12, lineHeight: 1.7 }}>
           <li>Only published curricula appear in user signup options.</li>
           <li>Curriculum creation stores raw JSON data as versioned snapshots.</li>
-          <li>User listing is loaded from file-based DB (`/DB/users/by-id`).</li>
+          <li>User listing is loaded from MongoDB (`users` collection).</li>
         </ul>
       </div>
 

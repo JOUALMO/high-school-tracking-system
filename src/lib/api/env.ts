@@ -10,10 +10,15 @@ const envSchema = z.object({
   ADMIN_SIGNUP_ACCESS_PASSWORD: z
     .string()
     .min(8, "ADMIN_SIGNUP_ACCESS_PASSWORD must be at least 8 characters."),
+  MONGODB_URI: z.string().min(1, "MONGODB_URI is required."),
+  MONGODB_DB_NAME: z.string().min(1).default("high_school_tracking_system_app"),
   DB_DIR_NAME: z.string().min(1).default("DB"),
 });
 
-const parsed = envSchema.safeParse(process.env);
+const parsed = envSchema.safeParse({
+  ...process.env,
+  MONGODB_URI: process.env.MONGODB_URI ?? process.env.DATABASE_URI,
+});
 
 if (!parsed.success) {
   const message = parsed.error.issues
