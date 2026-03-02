@@ -12,6 +12,7 @@ import {
 import { getApiBaseUrl, postAuth, saveAuthSession } from "@/lib/auth-client";
 import { syncSelectedCurriculumToIndexedDb } from "@/lib/curriculum-state";
 import { C } from "@/lib/constants";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface CurriculumOption {
   id: string;
@@ -33,6 +34,7 @@ export default function UserSignupPage() {
     text: string;
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const online = useOnlineStatus();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -122,6 +124,26 @@ export default function UserSignupPage() {
       switchLabel="Login"
     >
       {message && <AuthMessage type={message.type} text={message.text} />}
+
+      {!online && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 14px",
+            background: "#1a1a2e",
+            border: `1px solid ${C.border}`,
+            borderRadius: 10,
+            fontSize: 12,
+            color: "#f59e0b",
+            fontWeight: 600,
+            marginBottom: 4,
+          }}
+        >
+          ⚡ You&apos;re offline — signup requires an internet connection
+        </div>
+      )}
 
       <form
         onSubmit={onSubmit}
@@ -218,11 +240,12 @@ export default function UserSignupPage() {
           type="submit"
           disabled={
             submitting ||
+            !online ||
             loadingCurricula ||
             curricula.length === 0 ||
             !curriculumId
           }
-          style={{ ...authButtonStyle, opacity: submitting ? 0.7 : 1 }}
+          style={{ ...authButtonStyle, opacity: submitting || !online ? 0.7 : 1 }}
         >
           {submitting ? "Creating account..." : "Create Account"}
         </button>

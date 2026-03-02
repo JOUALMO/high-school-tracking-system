@@ -1,3 +1,15 @@
+/** Thrown when a network request is attempted while the device is offline. */
+export class OfflineError extends Error {
+  constructor(message = "You are offline.") {
+    super(message);
+    this.name = "OfflineError";
+  }
+}
+
+function isOnline(): boolean {
+  return typeof navigator !== "undefined" ? navigator.onLine : true;
+}
+
 export type AuthRole = "admin" | "user";
 
 export interface AuthUser {
@@ -58,6 +70,10 @@ export async function postAuth<TPayload extends Record<string, unknown>>(
   path: string,
   payload: TPayload,
 ): Promise<AuthApiResponse> {
+  if (!isOnline()) {
+    throw new OfflineError("Login and signup require an internet connection.");
+  }
+
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     method: "POST",
     headers: {
@@ -162,6 +178,10 @@ export async function apiRequest<TResponse>(
   path: string,
   init: RequestInit = {},
 ): Promise<TResponse> {
+  if (!isOnline()) {
+    throw new OfflineError();
+  }
+
   const token = readAuthToken();
   if (!token) {
     throw new Error("Please login first.");

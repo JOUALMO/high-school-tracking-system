@@ -42,6 +42,8 @@ import {
 import { getAdminCurriculum, updateAdminCurriculum } from "@/lib/admin-client";
 import { runBackupNow } from "@/lib/backup-client";
 import { idbGet, idbSet } from "@/lib/db";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 
 export default function StudyTracker() {
   const router = useRouter();
@@ -63,6 +65,7 @@ export default function StudyTracker() {
   const menuRef = useRef<HTMLDivElement>(null);
   const hasSyncedCurriculumRef = useRef(false);
   const hasLoadedReviewRef = useRef(false);
+  const online = useOnlineStatus();
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -94,6 +97,11 @@ export default function StudyTracker() {
 
     const current = readAuthSession();
     if (!current) {
+      // When offline, don't redirect — the user can use the app without auth
+      if (!online) {
+        setAuthReady(true);
+        return;
+      }
       clearAuthSession();
       router.replace("/login");
       setAuthReady(true);
@@ -115,7 +123,7 @@ export default function StudyTracker() {
 
     setSession(current);
     setAuthReady(true);
-  }, [router, reviewCurriculumId, urlReady]);
+  }, [router, reviewCurriculumId, urlReady, online]);
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -137,7 +145,8 @@ export default function StudyTracker() {
       !session ||
       session.user.role !== "user" ||
       !loaded ||
-      hasSyncedCurriculumRef.current
+      hasSyncedCurriculumRef.current ||
+      !online
     ) {
       return;
     }
@@ -156,14 +165,14 @@ export default function StudyTracker() {
         const expectedCurriculumId = session.user.selectedCurriculumId ?? null;
         const localCurriculumId =
           localState &&
-          typeof localState === "object" &&
-          typeof (localState as { curriculumId?: unknown }).curriculumId === "string"
+            typeof localState === "object" &&
+            typeof (localState as { curriculumId?: unknown }).curriculumId === "string"
             ? (localState as { curriculumId: string }).curriculumId
             : null;
         const localOwnerUserId =
           localState &&
-          typeof localState === "object" &&
-          typeof (localState as { ownerUserId?: unknown }).ownerUserId === "string"
+            typeof localState === "object" &&
+            typeof (localState as { ownerUserId?: unknown }).ownerUserId === "string"
             ? (localState as { ownerUserId: string }).ownerUserId
             : null;
         const curriculumMatches =
@@ -203,7 +212,7 @@ export default function StudyTracker() {
     return () => {
       cancelled = true;
     };
-  }, [session, loaded, importState]);
+  }, [session, loaded, importState, online]);
 
   useEffect(() => {
     if (
@@ -261,7 +270,7 @@ export default function StudyTracker() {
       inFlight = true;
       try {
         const backupPending = await idbGet("backup.pending");
-        if (backupPending !== "1") {
+        if (backupPending !== "1" || !navigator.onLine) {
           return;
         }
 
@@ -517,6 +526,8 @@ export default function StudyTracker() {
             <p style={{ fontSize: 7 }}>By M.JOU</p>
           </span>
         </div>
+        <OfflineBanner />
+
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <motion.div
             whileHover={{ scale: 1.06 }}

@@ -7,6 +7,10 @@ import { uid } from "@/lib/utils";
 
 const CURRICULUM_BASE_KEY = "curriculum.base";
 
+function isOnline(): boolean {
+  return typeof navigator !== "undefined" ? navigator.onLine : true;
+}
+
 interface RawLesson {
   id: string;
   title: string;
@@ -52,17 +56,19 @@ interface SelectedCurriculumResponse {
 interface BootstrapResponse {
   curriculum: RemoteCurriculum | null;
   backup:
-    | {
-        id: string;
-        createdAt: string;
-        state: unknown;
-      }
-    | null;
+  | {
+    id: string;
+    createdAt: string;
+    state: unknown;
+  }
+  | null;
 }
 
 export async function syncSelectedCurriculumToIndexedDb(
   previousState?: AppState | null,
 ): Promise<AppState | null> {
+  if (!isOnline()) return null;
+
   const next = await fetchSelectedCurriculumAppState(previousState);
   if (!next) {
     return null;
@@ -75,6 +81,8 @@ export async function syncSelectedCurriculumToIndexedDb(
 export async function syncUserStateFromServer(
   options?: { ownerUserId?: string | null },
 ): Promise<AppState | null> {
+  if (!isOnline()) return null;
+
   const ownerUserId =
     typeof options?.ownerUserId === "string" && options.ownerUserId.trim().length > 0
       ? options.ownerUserId
@@ -168,6 +176,8 @@ export async function syncUserStateFromServer(
 export async function fetchSelectedCurriculumAppState(
   previousState?: AppState | null,
 ): Promise<AppState | null> {
+  if (!isOnline()) return null;
+
   const response = await apiRequest<SelectedCurriculumResponse>("/curricula/selected");
   return mergeWithRemoteCurriculum(response.curriculum, previousState);
 }
