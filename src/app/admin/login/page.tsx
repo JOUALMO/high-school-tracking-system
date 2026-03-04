@@ -31,12 +31,12 @@ export default function AdminLoginPage() {
       });
 
       saveAuthSession(result);
-      setMessage({ type: "success", text: "Login successful. Redirecting to dashboard..." });
+      setMessage({ type: "success", text: "تم تسجيل الدخول بنجاح. جاري التحويل للوحة التحكم..." });
       router.push("/admin/dashboard");
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Unable to login.",
+        text: error instanceof Error ? error.message : "تعذر تسجيل الدخول.",
       });
     } finally {
       setSubmitting(false);
@@ -45,21 +45,21 @@ export default function AdminLoginPage() {
 
   return (
     <AuthLayout
-      title="Admin Login"
-      subtitle="Sign in to manage curricula and platform settings."
-      switchText="No admin account yet?"
+      title="تسجيل دخول المسؤول"
+      subtitle="قم بتسجيل الدخول لإدارة المناهج وإعدادات المنصة."
+      switchText="ليس لديك حساب مسؤول بعد؟"
       switchHref="/admin/signup"
-      switchLabel="Create one"
+      switchLabel="إنشاء حساب"
     >
       {message && <AuthMessage type={message.type} text={message.text} />}
 
       <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <label>
-          <div style={authLabelStyle}>Email</div>
+          <div style={authLabelStyle}>البريد الإلكتروني</div>
           <input
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => setEmail((event.target as any).value)}
             required
             style={authInputStyle}
             placeholder="admin@example.com"
@@ -67,19 +67,19 @@ export default function AdminLoginPage() {
         </label>
 
         <label>
-          <div style={authLabelStyle}>Password</div>
+          <div style={authLabelStyle}>كلمة المرور</div>
           <input
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setPassword((event.target as any).value)}
             required
             style={authInputStyle}
-            placeholder="Your password"
+            placeholder="كلمة المرور الخاصة بك"
           />
         </label>
 
         <button type="submit" disabled={submitting} style={{ ...authButtonStyle, opacity: submitting ? 0.7 : 1 }}>
-          {submitting ? "Signing in..." : "Login"}
+          {submitting ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
         </button>
 
         <p style={{ margin: 0, color: C.muted, fontSize: 11 }}>

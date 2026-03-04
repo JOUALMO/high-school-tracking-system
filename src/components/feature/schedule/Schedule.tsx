@@ -12,13 +12,13 @@ export function Schedule({
     setView: (v: string, data?: any) => void;
 }) {
     const DAYS = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
+        "الأحد",
+        "الاثنين",
+        "الثلاثاء",
+        "الأربعاء",
+        "الخميس",
+        "الجمعة",
+        "السبت",
     ];
     const todayI = new Date().getDay();
 
@@ -36,7 +36,7 @@ export function Schedule({
 
     return (
         <motion.div
-            variants={page}
+            variants={page as any}
             initial="initial"
             animate="animate"
             exit="exit"
@@ -47,7 +47,7 @@ export function Schedule({
             </h2>
 
             <motion.div
-                variants={card(0)}
+                variants={card(0) as any}
                 style={{
                     background: "linear-gradient(135deg,#14122a,#0c1620)",
                     borderRadius: 14,
@@ -75,7 +75,7 @@ export function Schedule({
                 return (
                     <motion.div
                         key={day}
-                        variants={card(i + 1)}
+                        variants={card(i + 1) as any}
                         style={{
                             background: isToday
                                 ? "linear-gradient(135deg,#1a1430,#0f0f1a)"

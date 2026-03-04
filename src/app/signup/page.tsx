@@ -54,7 +54,7 @@ export default function UserSignupPage() {
         } | null;
 
         if (!response.ok) {
-          throw new Error(parsed?.message || "Failed to load curricula.");
+          throw new Error(parsed?.message || "فشل تحميل المناهج.");
         }
 
         const items = Array.isArray(parsed?.items) ? parsed.items : [];
@@ -71,7 +71,7 @@ export default function UserSignupPage() {
           setCurriculaError(
             error instanceof Error
               ? error.message
-              : "Unable to load curricula.",
+              : "تعذر تحميل المناهج.",
           );
         }
       } finally {
@@ -102,13 +102,13 @@ export default function UserSignupPage() {
 
       saveAuthSession(result);
       await syncSelectedCurriculumToIndexedDb().catch(() => null);
-      setMessage({ type: "success", text: "Account created. Redirecting..." });
+      setMessage({ type: "success", text: "تم إنشاء الحساب. جاري التحويل..." });
       router.push("/");
     } catch (error) {
       setMessage({
         type: "error",
         text:
-          error instanceof Error ? error.message : "Unable to create account.",
+          error instanceof Error ? error.message : "تعذر إنشاء الحساب.",
       });
     } finally {
       setSubmitting(false);
@@ -117,11 +117,11 @@ export default function UserSignupPage() {
 
   return (
     <AuthLayout
-      title="User Signup"
-      subtitle="Create your account and choose curriculum data."
-      switchText="Already registered?"
+      title="إنشاء حساب طالب"
+      subtitle="قم بإنشاء حسابك واختيار بيانات المنهج."
+      switchText="مسجل بالفعل؟"
       switchHref="/login"
-      switchLabel="Login"
+      switchLabel="تسجيل الدخول"
     >
       {message && <AuthMessage type={message.type} text={message.text} />}
 
@@ -141,7 +141,7 @@ export default function UserSignupPage() {
             marginBottom: 4,
           }}
         >
-          ⚡ You&apos;re offline — signup requires an internet connection
+          ⚡ أنت غير متصل بالإنترنت — إنشاء الحساب يتطلب اتصالاً بالإنترنت
         </div>
       )}
 
@@ -150,23 +150,23 @@ export default function UserSignupPage() {
         style={{ display: "flex", flexDirection: "column", gap: 12 }}
       >
         <label>
-          <div style={authLabelStyle}>Username</div>
+          <div style={authLabelStyle}>اسم المستخدم</div>
           <input
             type="text"
             value={username}
-            onChange={(event) => setUsername(event.target.value)}
+            onChange={(event) => setUsername((event.target as any).value)}
             required
             style={authInputStyle}
-            placeholder="Your name"
+            placeholder="اسمك"
           />
         </label>
 
         <label>
-          <div style={authLabelStyle}>Phone Number</div>
+          <div style={authLabelStyle}>رقم الهاتف</div>
           <input
             type="tel"
             value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) => setPhone((event.target as any).value)}
             required
             style={authInputStyle}
             placeholder="01012345678"
@@ -174,11 +174,11 @@ export default function UserSignupPage() {
         </label>
 
         <label>
-          <div style={authLabelStyle}>Password</div>
+          <div style={authLabelStyle}>كلمة المرور</div>
           <input
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setPassword((event.target as any).value)}
             required
             minLength={8}
             style={authInputStyle}
@@ -187,11 +187,11 @@ export default function UserSignupPage() {
         </label>
 
         <label>
-          <div style={authLabelStyle}>Confirm Password</div>
+          <div style={authLabelStyle}>تأكيد كلمة المرور</div>
           <input
             type="password"
             value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
+            onChange={(event) => setConfirmPassword((event.target as any).value)}
             required
             minLength={8}
             style={authInputStyle}
@@ -200,16 +200,16 @@ export default function UserSignupPage() {
         </label>
 
         <label>
-          <div style={authLabelStyle}>Curriculum</div>
+          <div style={authLabelStyle}>المنهج</div>
           <select
             value={curriculumId}
-            onChange={(event) => setCurriculumId(event.target.value)}
+            onChange={(event) => setCurriculumId((event.target as any).value)}
             style={authInputStyle}
             disabled={loadingCurricula || curricula.length === 0}
             required
           >
             <option value="">
-              {loadingCurricula ? "Loading curricula..." : "Choose curriculum"}
+              {loadingCurricula ? "جاري تحميل المناهج..." : "اختر المنهج"}
             </option>
             {curricula.map((item) => (
               <option key={item.id} value={item.id}>
@@ -221,18 +221,17 @@ export default function UserSignupPage() {
 
         {loadingCurricula && (
           <p style={{ margin: 0, color: C.muted, fontSize: 11 }}>
-            Loading curriculum options...
+            جاري تحميل خيارات المناهج...
           </p>
         )}
         {!loadingCurricula && curriculaError && (
           <p style={{ margin: 0, color: C.red, fontSize: 11 }}>
-            Curriculum list error: {curriculaError}
+            خطأ في قائمة المناهج: {curriculaError}
           </p>
         )}
         {!loadingCurricula && !curriculaError && curricula.length === 0 && (
           <p style={{ margin: 0, color: C.red, fontSize: 11 }}>
-            No published curricula yet. Ask admin to publish at least one
-            curriculum.
+            لا توجد مناهج منشورة بعد. اطلب من المسؤول نشر منهج واحد على الأقل.
           </p>
         )}
 
@@ -247,7 +246,7 @@ export default function UserSignupPage() {
           }
           style={{ ...authButtonStyle, opacity: submitting || !online ? 0.7 : 1 }}
         >
-          {submitting ? "Creating account..." : "Create Account"}
+          {submitting ? "جاري إنشاء الحساب..." : "إنشاء حساب"}
         </button>
 
         <p style={{ margin: 0, color: C.muted, fontSize: 11 }}>

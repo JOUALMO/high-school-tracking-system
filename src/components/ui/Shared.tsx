@@ -28,7 +28,7 @@ export const Card = ({
 
     return (
         <motion.div
-            variants={noAnim ? undefined : variants(delay)}
+            variants={(noAnim ? undefined : variants(delay)) as any}
             initial={noAnim ? undefined : "initial"}
             animate={noAnim ? undefined : "animate"}
             onClick={onClick}

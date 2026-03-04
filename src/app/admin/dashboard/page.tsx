@@ -92,10 +92,12 @@ export default function AdminDashboardPage() {
   }, [session]);
 
   useEffect(() => {
-    const updateCompact = () => setCompact(window.innerWidth < 960);
+    const win = (globalThis as any).window;
+    if (!win) return;
+    const updateCompact = () => setCompact(win.innerWidth < 960);
     updateCompact();
-    window.addEventListener("resize", updateCompact);
-    return () => window.removeEventListener("resize", updateCompact);
+    win.addEventListener("resize", updateCompact);
+    return () => win.removeEventListener("resize", updateCompact);
   }, []);
 
   async function refreshData() {
@@ -206,7 +208,8 @@ export default function AdminDashboardPage() {
   }
 
   async function removeCurriculum(curriculumId: string, title: string) {
-    const accepted = window.confirm(
+    const win = (globalThis as any).window;
+    const accepted = win?.confirm?.(
       `Delete "${title}" and all of its versions? This cannot be undone.`,
     );
     if (!accepted) {
@@ -659,7 +662,7 @@ function UsersTab({
         <Search size={14} style={{ color: C.muted }} />
         <input
           value={search}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) => setSearch((event.target as any).value)}
           placeholder="Search by name, phone, curriculum id"
           style={{
             background: "transparent",
@@ -771,13 +774,13 @@ function CurriculaTab({
         <div style={{ display: "grid", gap: 8 }}>
           <input
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => setTitle((event.target as any).value)}
             placeholder="Curriculum title"
             style={baseInputStyle}
           />
           <textarea
             value={jsonData}
-            onChange={(event) => setJsonData(event.target.value)}
+            onChange={(event) => setJsonData((event.target as any).value)}
             placeholder="Raw curriculum JSON"
             rows={8}
             style={{ ...baseInputStyle, resize: "vertical", fontFamily: "monospace" }}

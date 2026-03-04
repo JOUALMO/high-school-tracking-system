@@ -37,7 +37,7 @@ export function OfflineBanner() {
                         }}
                     >
                         <WifiOff size={13} style={{
-                            color: "#f59e0b", flexShrink: 0,
+                            color: "#6e778b7a", flexShrink: 0,
                             // animation: "pulse-dot 2s ease-in-out infinite",
 
                         }} />

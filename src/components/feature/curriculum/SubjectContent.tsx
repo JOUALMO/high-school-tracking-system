@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Plus } from "lucide-react";
-import { C, DAY_NAMES } from "@/lib/constants";
+import { C, DAY_AR, DAY_NAMES } from "@/lib/constants";
 import { uid } from "@/lib/utils";
 import { Btn } from "@/components/ui/Shared";
 import { UnitItem } from "./UnitItem";
@@ -132,7 +132,7 @@ export function SubjectContent({
                     />
                 </div>
                 <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                    {DAY_NAMES.map((d, i) => (
+                    {DAY_AR.map((d, i) => (
                         <span
                             key={i}
                             style={{
@@ -187,7 +187,7 @@ export function SubjectContent({
                         <div style={{ display: "flex", gap: 7, marginTop: 10 }}>
                             <input
                                 value={newUnitName}
-                                onChange={(e) => setNewUnitName(e.target.value)}
+                                onChange={(e) => setNewUnitName((e.target as any).value)}
                                 placeholder="Unit name..."
                                 onKeyDown={(e) => e.key === "Enter" && addUnit()}
                                 autoFocus

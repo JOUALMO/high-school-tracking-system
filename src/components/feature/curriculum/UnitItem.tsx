@@ -274,7 +274,7 @@ export function UnitItem({
                         >
                             <input
                                 value={editName}
-                                onChange={(e) => setEditName(e.target.value)}
+                                onChange={(e) => setEditName((e.target as any).value)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         onRenameUnit(editName);
@@ -484,7 +484,7 @@ export function UnitItem({
                                 <div style={{ display: "flex", gap: 7, marginTop: 10 }}>
                                     <input
                                         value={lesTitle}
-                                        onChange={(e) => setLesTitle(e.target.value)}
+                                        onChange={(e) => setLesTitle((e.target as any).value)}
                                         placeholder="Lesson title..."
                                         onKeyDown={(e) => e.key === "Enter" && addLesson()}
                                         autoFocus

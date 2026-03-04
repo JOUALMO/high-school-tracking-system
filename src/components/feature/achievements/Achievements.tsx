@@ -18,7 +18,7 @@ export function Achievements({ state }: { state: AppState }) {
 
     return (
         <motion.div
-            variants={page}
+            variants={page as any}
             initial="initial"
             animate="animate"
             exit="exit"
@@ -120,7 +120,7 @@ export function Achievements({ state }: { state: AppState }) {
                 ].map((s, i) => (
                     <motion.div
                         key={s.l}
-                        variants={card(i + 1)}
+                        variants={card(i + 1) as any}
                         style={{
                             background: C.card,
                             border: `1px solid ${C.border}`,
@@ -166,7 +166,7 @@ export function Achievements({ state }: { state: AppState }) {
                         return (
                             <motion.div
                                 key={badge.id}
-                                variants={card(i + 5)}
+                                variants={card(i + 5) as any}
                                 whileHover={earned ? { scale: 1.03 } : {}}
                                 style={{
                                     background: earned ? `${C.accent}12` : C.card,
@@ -206,7 +206,7 @@ export function Achievements({ state }: { state: AppState }) {
                                     </div>
                                     {earned && (
                                         <motion.div
-                                            {...pop}
+                                            {...(pop as any)}
                                             style={{
                                                 fontSize: 9,
                                                 color: C.green,

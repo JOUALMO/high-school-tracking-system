@@ -15,7 +15,7 @@ export function asyncHandler<TParams extends object = Record<string, string>>(
     context: RouteContext<TParams>,
   ) => Promise<NextResponse>,
 ) {
-  return async (req: NextRequest, context?: RouteContext<TParams>) => {
+  return async (req: NextRequest, context: any) => {
     try {
       return await handler(req, context ?? (defaultContext as RouteContext<TParams>));
     } catch (error) {

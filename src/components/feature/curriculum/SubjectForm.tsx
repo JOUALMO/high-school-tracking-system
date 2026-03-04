@@ -47,7 +47,7 @@ export function SubjectForm({
             </h4>
             <input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setName((e.target as any).value)}
                 placeholder="Subject name..."
                 onKeyDown={(e) => e.key === "Enter" && save()}
                 autoFocus

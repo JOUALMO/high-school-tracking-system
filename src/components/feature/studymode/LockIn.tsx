@@ -76,7 +76,7 @@ export function LockIn({
 
     return (
         <motion.div
-            variants={page}
+            variants={page as any}
             initial="initial"
             animate="animate"
             exit="exit"

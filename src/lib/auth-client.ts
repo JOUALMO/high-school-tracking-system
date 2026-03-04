@@ -43,7 +43,7 @@ export function getApiBaseUrl(): string {
     return normalizedBase;
   }
 
-  if (typeof window === "undefined") {
+  if (typeof (globalThis as any).window === "undefined") {
     return normalizedBase;
   }
 
@@ -51,7 +51,7 @@ export function getApiBaseUrl(): string {
     const parsed = new URL(normalizedBase);
     const isConfiguredLocalHost =
       parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
-    const currentHost = window.location.hostname;
+    const currentHost = (globalThis as any).window.location.hostname;
     const isCurrentHostLocal =
       currentHost === "localhost" || currentHost === "127.0.0.1";
 
@@ -115,7 +115,7 @@ export async function postAuth<TPayload extends Record<string, unknown>>(
 }
 
 export function saveAuthSession(session: AuthApiResponse): void {
-  if (typeof window === "undefined") {
+  if (typeof (globalThis as any).window === "undefined") {
     return;
   }
 
@@ -124,17 +124,17 @@ export function saveAuthSession(session: AuthApiResponse): void {
     savedAt: new Date().toISOString(),
   };
 
-  window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
+  (globalThis as any).window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
   writeCookie(AUTH_ROLE_COOKIE_KEY, session.user.role, 7);
   writeCookie(AUTH_TOKEN_COOKIE_KEY, session.token, 7);
 }
 
 export function readAuthSession(): StoredAuthSession | null {
-  if (typeof window === "undefined") {
+  if (typeof (globalThis as any).window === "undefined") {
     return null;
   }
 
-  const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
+  const raw = (globalThis as any).window.localStorage.getItem(AUTH_STORAGE_KEY);
   if (!raw) {
     return null;
   }
@@ -161,11 +161,11 @@ export function readAuthSession(): StoredAuthSession | null {
 }
 
 export function clearAuthSession(): void {
-  if (typeof window === "undefined") {
+  if (typeof (globalThis as any).window === "undefined") {
     return;
   }
 
-  window.localStorage.removeItem(AUTH_STORAGE_KEY);
+  (globalThis as any).window.localStorage.removeItem(AUTH_STORAGE_KEY);
   removeCookie(AUTH_ROLE_COOKIE_KEY);
   removeCookie(AUTH_TOKEN_COOKIE_KEY);
 }
@@ -211,20 +211,20 @@ export async function apiRequest<TResponse>(
 }
 
 function writeCookie(name: string, value: string, days: number): void {
-  if (typeof document === "undefined") {
+  if (typeof (globalThis as any).document === "undefined") {
     return;
   }
 
   const expiry = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(
+  (globalThis as any).document.cookie = `${name}=${encodeURIComponent(
     value,
   )}; expires=${expiry}; path=/; samesite=lax`;
 }
 
 function removeCookie(name: string): void {
-  if (typeof document === "undefined") {
+  if (typeof (globalThis as any).document === "undefined") {
     return;
   }
 
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; samesite=lax`;
+  (globalThis as any).document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; samesite=lax`;
 }

@@ -25,7 +25,7 @@ export function SettingsPanel({
             type: "application/json",
         });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const a = (globalThis as any).document.createElement("a");
         a.href = url;
         a.download = `studyflow-backup-${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
@@ -34,7 +34,7 @@ export function SettingsPanel({
     };
 
     const doImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target?.files?.[0];
+        const file = (e.target as any).files?.[0];
         if (!file) return;
 
         if (!file.name.endsWith(".json") && file.type !== "application/json") {
@@ -165,7 +165,7 @@ export function SettingsPanel({
                     </Btn>
                     <Btn
                         variant="indigo"
-                        onClick={() => fileRef.current?.click()}
+                        onClick={() => (fileRef.current as any)?.click()}
                         style={{ justifyContent: "center", padding: "12px" }}
                     >
                         <Upload size={14} /> Import JSON
@@ -181,7 +181,7 @@ export function SettingsPanel({
                 <AnimatePresence>
                     {msg && (
                         <motion.p
-                            {...pop}
+                            {...(pop as any)}
                             style={{
                                 textAlign: "center",
                                 fontSize: 12,
@@ -236,7 +236,7 @@ export function SettingsPanel({
                         ))}
                     </div>
                 </div>
-            </motion.div>
-        </motion.div>
+            </motion.div >
+        </motion.div >
     );
 }

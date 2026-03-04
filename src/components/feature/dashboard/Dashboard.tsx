@@ -42,7 +42,7 @@ export function Dashboard({
 
     return (
         <motion.div
-            variants={page}
+            variants={page as any}
             initial="initial"
             animate="animate"
             exit="exit"
@@ -50,7 +50,7 @@ export function Dashboard({
         >
             {/* Hero */}
             <motion.div
-                variants={card(0)}
+                variants={card(0) as any}
                 style={{
                     background: "linear-gradient(135deg,#14122a 0%,#0c1620 100%)",
                     borderRadius: 20,
@@ -130,7 +130,7 @@ export function Dashboard({
                 ].map((s, i) => (
                     <motion.div
                         key={s.l}
-                        variants={card(i + 1)}
+                        variants={card(i + 1) as any}
                         style={{
                             background: C.card,
                             border: `1px solid ${C.border}`,

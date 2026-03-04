@@ -54,6 +54,7 @@ export function AuthLayout({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.45 }}
+      dir="rtl"
       style={{
         minHeight: "100vh",
         background: C.bg,
@@ -64,6 +65,7 @@ export function AuthLayout({
         padding: 20,
         position: "relative",
         overflow: "hidden",
+        direction: "rtl",
       }}
     >
       <motion.div

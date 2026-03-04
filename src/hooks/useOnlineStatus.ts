@@ -3,16 +3,18 @@
 import { useSyncExternalStore } from "react";
 
 function subscribe(callback: () => void): () => void {
-    window.addEventListener("online", callback);
-    window.addEventListener("offline", callback);
+    const win = (globalThis as any).window;
+    if (!win) return () => { };
+    win.addEventListener("online", callback);
+    win.addEventListener("offline", callback);
     return () => {
-        window.removeEventListener("online", callback);
-        window.removeEventListener("offline", callback);
+        win.removeEventListener("online", callback);
+        win.removeEventListener("offline", callback);
     };
 }
 
 function getSnapshot(): boolean {
-    return navigator.onLine;
+    return typeof navigator !== "undefined" ? navigator.onLine : true;
 }
 
 function getServerSnapshot(): boolean {

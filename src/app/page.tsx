@@ -68,11 +68,12 @@ export default function StudyTracker() {
   const online = useOnlineStatus();
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    const win = (globalThis as any).window;
+    if (!win) {
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(win.location.search);
     setReviewCurriculumId(params.get("reviewCurriculumId"));
     setUrlReady(true);
   }, []);
@@ -126,18 +127,17 @@ export default function StudyTracker() {
   }, [router, reviewCurriculumId, urlReady, online]);
 
   useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (!menuRef.current) {
-        return;
-      }
+    const doc = (globalThis as any).document;
+    if (!doc || !menuRef.current) return;
 
-      if (!menuRef.current.contains(event.target as Node)) {
+    const onClick = (event: MouseEvent) => {
+      if (!(menuRef.current as any)?.contains(event.target as any)) {
         setShowAccountMenu(false);
       }
     };
 
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    doc.addEventListener("mousedown", onClick);
+    return () => doc.removeEventListener("mousedown", onClick);
   }, []);
 
   useEffect(() => {
@@ -289,28 +289,32 @@ export default function StudyTracker() {
       }
     };
 
+    const win = (globalThis as any).window;
+    if (!win) return;
+
     void flushPendingBackup();
-    const intervalId = window.setInterval(() => {
+    const intervalId = win.setInterval(() => {
       void flushPendingBackup();
     }, 30_000);
 
     const onFocus = () => {
       void flushPendingBackup();
     };
+    const doc = (globalThis as any).document;
     const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
+      if (doc?.visibilityState === "visible") {
         void flushPendingBackup();
       }
     };
 
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    win.addEventListener("focus", onFocus);
+    doc?.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       cancelled = true;
-      window.clearInterval(intervalId);
-      window.removeEventListener("focus", onFocus);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
+      win.clearInterval(intervalId);
+      win.removeEventListener("focus", onFocus);
+      doc?.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [session, loaded]);
 
@@ -881,7 +885,7 @@ function AdminReviewWorkspace({
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", gap: 8 }}>
           <input
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => setTitle((event.target as any).value)}
             placeholder="Curriculum title"
             style={{
               borderRadius: 10,

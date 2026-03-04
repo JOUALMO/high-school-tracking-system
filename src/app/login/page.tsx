@@ -33,12 +33,12 @@ export default function UserLoginPage() {
       });
 
       saveAuthSession(result);
-      setMessage({ type: "success", text: "Login successful. Redirecting..." });
+      setMessage({ type: "success", text: "تم تسجيل الدخول بنجاح. جاري التحويل..." });
       router.push("/");
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Unable to login.",
+        text: error instanceof Error ? error.message : "تعذر تسجيل الدخول.",
       });
     } finally {
       setSubmitting(false);
@@ -47,11 +47,11 @@ export default function UserLoginPage() {
 
   return (
     <AuthLayout
-      title="User Login"
-      subtitle="Sign in with phone number and password."
-      switchText="Need an account?"
+      title="تسجيل الدخول"
+      subtitle="قم بتسجيل الدخول باستخدام رقم الهاتف وكلمة المرور."
+      switchText="ليس لديك حساب؟"
       switchHref="/signup"
-      switchLabel="Create one"
+      switchLabel="إنشاء حساب"
     >
       {message && <AuthMessage type={message.type} text={message.text} />}
 
@@ -71,17 +71,17 @@ export default function UserLoginPage() {
             marginBottom: 4,
           }}
         >
-          ⚡ You&apos;re offline — login requires an internet connection
+          ⚡ أنت غير متصل بالإنترنت — تسجيل الدخول يتطلب اتصالاً بالإنترنت
         </div>
       )}
 
       <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <label>
-          <div style={authLabelStyle}>Phone Number</div>
+          <div style={authLabelStyle}>رقم الهاتف</div>
           <input
             type="tel"
             value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={(event) => setPhone((event.target as any).value)}
             required
             style={authInputStyle}
             placeholder="01012345678"
@@ -89,23 +89,23 @@ export default function UserLoginPage() {
         </label>
 
         <label>
-          <div style={authLabelStyle}>Password</div>
+          <div style={authLabelStyle}>كلمة المرور</div>
           <input
             type="password"
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => setPassword((event.target as any).value)}
             required
             style={authInputStyle}
-            placeholder="Your password"
+            placeholder="كلمة المرور الخاصة بك"
           />
         </label>
 
         <button type="submit" disabled={submitting || !online} style={{ ...authButtonStyle, opacity: submitting || !online ? 0.7 : 1 }}>
-          {submitting ? "Signing in..." : "Login"}
+          {submitting ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
         </button>
 
         <p style={{ margin: 0, color: C.muted, fontSize: 11 }}>
-          Route: <strong>/login</strong>
+          المسار: <strong>/login</strong>
         </p>
       </form>
     </AuthLayout>

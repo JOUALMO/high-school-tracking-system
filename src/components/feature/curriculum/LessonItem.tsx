@@ -61,7 +61,7 @@ export function LessonItem({
                 <>
                     <input
                         value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
+                        onChange={(e) => setEditTitle((e.target as any).value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 onRename(editTitle);

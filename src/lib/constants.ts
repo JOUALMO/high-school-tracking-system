@@ -34,9 +34,9 @@ export const DAY_AR = ["أح", "اث", "ث", "أر", "خ", "ج", "س"];
 export const LEVELS = [
     { level: 1, name: "Beginner", min: 0, color: C.muted },
     { level: 2, name: "Student", min: 100, color: C.indigo },
-    { level: 3, name: "Scholar", min: 300, color: C.green },
-    { level: 4, name: "Expert", min: 600, color: C.accent },
-    { level: 5, name: "Master", min: 1000, color: C.pink },
+    { level: 3, name: "Scholar", min: 600, color: C.green },
+    { level: 4, name: "Expert", min: 1500, color: C.accent },
+    { level: 5, name: "Master", min: 3000, color: C.pink },
 ];
 
 export const INITIAL: AppState = {
