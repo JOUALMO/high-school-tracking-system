@@ -17,7 +17,7 @@ import {
 import { C, DAY_NAMES, BADGES } from "@/lib/constants";
 import { useLongPress } from "@/hooks/useLongPress";
 import { uid, allLessonsOf } from "@/lib/utils";
-import { Btn, Pill } from "@/components/ui/Shared";
+import { Btn, Pill, ConfirmModal } from "@/components/ui/Shared";
 import { LessonItem } from "./LessonItem";
 import { Unit } from "@/lib/types";
 
@@ -52,6 +52,7 @@ export function UnitItem({
     const [editName, setEditName] = useState(unit.name);
     const [addingLes, setAddingLes] = useState(false);
     const [lesTitle, setLesTitle] = useState("");
+    const [confirmDeleteLesson, setConfirmDeleteLesson] = useState<string | null>(null);
 
     const open = expandedUnit === unit.id;
 
@@ -250,6 +251,13 @@ export function UnitItem({
             exit={{ opacity: 0, x: -40 }}
             style={{ marginBottom: 10 }}
         >
+            <ConfirmModal
+                isOpen={!!confirmDeleteLesson}
+                title="Delete Lesson"
+                message="Are you sure you want to delete this lesson? This action cannot be undone."
+                onConfirm={() => confirmDeleteLesson && deleteLesson(confirmDeleteLesson)}
+                onCancel={() => setConfirmDeleteLesson(null)}
+            />
             <div
                 style={{
                     background: C.card,
@@ -449,7 +457,7 @@ export function UnitItem({
                                         SI={SI}
                                         SL={SL}
                                         onCycle={() => cycleStatus(l.id)}
-                                        onDelete={() => deleteLesson(l.id)}
+                                        onDelete={() => setConfirmDeleteLesson(l.id)}
                                         onMove={(dir) => moveLesson(l.id, dir)}
                                         onRename={(name) =>
                                             update((s: any) => ({

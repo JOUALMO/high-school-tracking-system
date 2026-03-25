@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { C } from "@/lib/constants";
 import { levelFor, nextLevel, pctToNext } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -227,5 +227,72 @@ export function Confetti({ onDone }: { onDone: () => void }) {
                 />
             ))}
         </div>
+    );
+}
+
+// ─── CONFIRM MODAL component
+export function ConfirmModal({
+    isOpen,
+    title,
+    message,
+    onConfirm,
+    onCancel,
+}: {
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+}) {
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        background: "rgba(0,0,0,0.6)",
+                        zIndex: 99999,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backdropFilter: "blur(2px)",
+                    }}
+                    onClick={onCancel}
+                >
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            background: C.card,
+                            border: `1px solid ${C.border}`,
+                            borderRadius: 16,
+                            padding: 20,
+                            width: "90%",
+                            maxWidth: 320,
+                            boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+                        }}
+                    >
+                        <div style={{ fontWeight: 900, fontSize: 16, color: C.text, marginBottom: 8 }}>
+                            {title || "Confirm Action"}
+                        </div>
+                        <div style={{ color: C.muted, fontSize: 13, marginBottom: 20, lineHeight: 1.4 }}>
+                            {message}
+                        </div>
+                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                            <Btn variant="ghost" onClick={onCancel} style={{ padding: "8px 14px" }}>
+                                Cancel
+                            </Btn>
+                            <Btn variant="danger" onClick={() => { onConfirm(); onCancel(); }} style={{ padding: "8px 14px" }}>
+                                Delete
+                            </Btn>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
     );
 }

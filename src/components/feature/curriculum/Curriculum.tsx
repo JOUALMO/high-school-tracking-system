@@ -5,7 +5,7 @@ import { C } from "@/lib/constants";
 import { uid } from "@/lib/utils";
 import { useLongPress } from "@/hooks/useLongPress";
 import { page } from "@/lib/motion";
-import { Btn, Confetti } from "@/components/ui/Shared";
+import { Btn, Confetti, ConfirmModal } from "@/components/ui/Shared";
 import { SubjectForm } from "./SubjectForm";
 import { SubjectContent } from "./SubjectContent";
 import { AppState, Subject } from "@/lib/types";
@@ -17,6 +17,7 @@ export function Curriculum({
     state: AppState;
     update: (updater: any) => void;
 }) {
+    const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
     const [selectedSubId, setSelectedSubId] = useState<string | null>(
         state.subjects[0]?.id || null
     );
@@ -97,6 +98,13 @@ export function Curriculum({
             exit="exit"
             style={{ display: "flex", flexDirection: "column", gap: 0 }}
         >
+            <ConfirmModal
+                isOpen={!!confirmDelete}
+                title="Delete Subject"
+                message="Are you sure you want to delete this subject? All its units and lessons will be lost."
+                onConfirm={() => confirmDelete && deleteSubject(confirmDelete)}
+                onCancel={() => setConfirmDelete(null)}
+            />
             {confetti && <Confetti onDone={() => setConfetti(false)} />}
 
             {/* Header */}
@@ -185,167 +193,22 @@ export function Curriculum({
                             scrollbarWidth: "none",
                         }}
                     >
-                        {state.subjects.map((sub, si) => {
-                            const isSelected = sub.id === selectedSubId;
-                            const isEditMode = editModeSubId === sub.id;
-                            const lp = useLongPress(() => setEditModeSubId(sub.id));
-
-                            return (
-                                <div key={sub.id} style={{ flexShrink: 0 }}>
-                                    <AnimatePresence mode="wait">
-                                        {isEditMode ? (
-                                            /* Edit mode toolbar */
-                                            <motion.div
-                                                key="edit"
-                                                initial={{ scale: 0.85, opacity: 0 }}
-                                                animate={{ scale: 1, opacity: 1 }}
-                                                exit={{ scale: 0.85, opacity: 0 }}
-                                                style={{
-                                                    display: "flex",
-                                                    gap: 4,
-                                                    alignItems: "center",
-                                                    background: C.card,
-                                                    border: `1px solid ${sub.color}55`,
-                                                    borderRadius: 10,
-                                                    padding: "4px 6px",
-                                                }}
-                                            >
-                                                <span
-                                                    style={{
-                                                        fontSize: 11,
-                                                        fontWeight: 800,
-                                                        color: sub.color,
-                                                        maxWidth: 70,
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        whiteSpace: "nowrap",
-                                                    }}
-                                                >
-                                                    {sub.name}
-                                                </span>
-                                                <motion.button
-                                                    whileTap={{ scale: 0.85 }}
-                                                    onClick={() => moveSubject(sub.id, -1)}
-                                                    disabled={si === 0}
-                                                    style={{
-                                                        background: "none",
-                                                        border: "none",
-                                                        color: si === 0 ? C.border : C.muted,
-                                                        cursor: "pointer",
-                                                        padding: 2,
-                                                    }}
-                                                >
-                                                    <ChevronUp size={12} />
-                                                </motion.button>
-                                                <motion.button
-                                                    whileTap={{ scale: 0.85 }}
-                                                    onClick={() => moveSubject(sub.id, 1)}
-                                                    disabled={si === state.subjects.length - 1}
-                                                    style={{
-                                                        background: "none",
-                                                        border: "none",
-                                                        color:
-                                                            si === state.subjects.length - 1
-                                                                ? C.border
-                                                                : C.muted,
-                                                        cursor: "pointer",
-                                                        padding: 2,
-                                                    }}
-                                                >
-                                                    <ChevronDown size={12} />
-                                                </motion.button>
-                                                <motion.button
-                                                    whileTap={{ scale: 0.85 }}
-                                                    onClick={() => {
-                                                        setEditingSub(sub.id);
-                                                        setEditModeSubId(null);
-                                                        setShowAddSub(false);
-                                                    }}
-                                                    style={{
-                                                        background: `${C.indigo}22`,
-                                                        border: `1px solid ${C.indigo}44`,
-                                                        borderRadius: 6,
-                                                        color: C.indigo,
-                                                        cursor: "pointer",
-                                                        padding: "2px 6px",
-                                                        fontSize: 10,
-                                                        fontWeight: 700,
-                                                    }}
-                                                >
-                                                    Edit
-                                                </motion.button>
-                                                <motion.button
-                                                    whileTap={{ scale: 0.85 }}
-                                                    onClick={() => deleteSubject(sub.id)}
-                                                    style={{
-                                                        background: `${C.red}22`,
-                                                        border: `1px solid ${C.red}44`,
-                                                        borderRadius: 6,
-                                                        color: C.red,
-                                                        cursor: "pointer",
-                                                        padding: "2px 5px",
-                                                    }}
-                                                >
-                                                    <Trash2 size={10} />
-                                                </motion.button>
-                                                <motion.button
-                                                    whileTap={{ scale: 0.85 }}
-                                                    onClick={() => setEditModeSubId(null)}
-                                                    style={{
-                                                        background: "none",
-                                                        border: "none",
-                                                        color: C.muted,
-                                                        cursor: "pointer",
-                                                        padding: 2,
-                                                    }}
-                                                >
-                                                    <X size={11} />
-                                                </motion.button>
-                                            </motion.div>
-                                        ) : (
-                                            /* Normal tab */
-                                            <motion.button
-                                                key="tab"
-                                                {...lp}
-                                                onClick={() => {
-                                                    setSelectedSubId(sub.id);
-                                                    setEditModeSubId(null);
-                                                }}
-                                                style={{
-                                                    padding: "7px 14px",
-                                                    borderRadius: 10,
-                                                    border: "none",
-                                                    cursor: "pointer",
-                                                    fontWeight: 800,
-                                                    fontSize: 12,
-                                                    whiteSpace: "nowrap",
-                                                    background: isSelected ? `${sub.color}28` : C.ghost,
-                                                    color: isSelected ? sub.color : C.muted,
-                                                    boxShadow: isSelected
-                                                        ? `0 0 0 1.5px ${sub.color}77`
-                                                        : `0 0 0 1px ${C.border}`,
-                                                    transition: "all 0.15s",
-                                                    userSelect: "none",
-                                                }}
-                                            >
-                                                <span
-                                                    style={{
-                                                        display: "inline-block",
-                                                        width: 7,
-                                                        height: 7,
-                                                        borderRadius: "50%",
-                                                        background: sub.color,
-                                                        marginRight: 6,
-                                                        verticalAlign: "middle",
-                                                    }}
-                                                />
-                                                {sub.name}
-                                            </motion.button>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            );
-                        })}
+                        {state.subjects.map((sub, si) => (
+                            <SubjectTab
+                                key={sub.id}
+                                sub={sub}
+                                si={si}
+                                totalSubs={state.subjects.length}
+                                isSelected={sub.id === selectedSubId}
+                                isEditMode={editModeSubId === sub.id}
+                                setSelectedSubId={setSelectedSubId}
+                                setEditModeSubId={setEditModeSubId}
+                                moveSubject={moveSubject}
+                                setEditingSub={setEditingSub}
+                                setShowAddSub={setShowAddSub}
+                                setConfirmDelete={setConfirmDelete}
+                            />
+                        ))}
                     </div>
                 </div>
             )}
@@ -378,5 +241,172 @@ export function Curriculum({
                 />
             )}
         </motion.div>
+    );
+}
+
+function SubjectTab({
+    sub,
+    si,
+    totalSubs,
+    isSelected,
+    isEditMode,
+    setSelectedSubId,
+    setEditModeSubId,
+    moveSubject,
+    setEditingSub,
+    setShowAddSub,
+    setConfirmDelete,
+}: any) {
+    const lp = useLongPress(() => setEditModeSubId(sub.id));
+
+    return (
+        <div style={{ flexShrink: 0 }}>
+            <AnimatePresence mode="wait">
+                {isEditMode ? (
+                    <motion.div
+                        key="edit"
+                        initial={{ scale: 0.85, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.85, opacity: 0 }}
+                        style={{
+                            display: "flex",
+                            gap: 4,
+                            alignItems: "center",
+                            background: C.card,
+                            border: `1px solid ${sub.color}55`,
+                            borderRadius: 10,
+                            padding: "4px 6px",
+                        }}
+                    >
+                        <span
+                            style={{
+                                fontSize: 11,
+                                fontWeight: 800,
+                                color: sub.color,
+                                maxWidth: 70,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                            }}
+                        >
+                            {sub.name}
+                        </span>
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => moveSubject(sub.id, -1)}
+                            disabled={si === 0}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                color: si === 0 ? C.border : C.muted,
+                                cursor: "pointer",
+                                padding: 2,
+                            }}
+                        >
+                            <ChevronUp size={12} />
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => moveSubject(sub.id, 1)}
+                            disabled={si === totalSubs - 1}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                color: si === totalSubs - 1 ? C.border : C.muted,
+                                cursor: "pointer",
+                                padding: 2,
+                            }}
+                        >
+                            <ChevronDown size={12} />
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => {
+                                setEditingSub(sub.id);
+                                setEditModeSubId(null);
+                                setShowAddSub(false);
+                            }}
+                            style={{
+                                background: `${C.indigo}22`,
+                                border: `1px solid ${C.indigo}44`,
+                                borderRadius: 6,
+                                color: C.indigo,
+                                cursor: "pointer",
+                                padding: "2px 6px",
+                                fontSize: 10,
+                                fontWeight: 700,
+                            }}
+                        >
+                            Edit
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => setConfirmDelete(sub.id)}
+                            style={{
+                                background: `${C.red}22`,
+                                border: `1px solid ${C.red}44`,
+                                borderRadius: 6,
+                                color: C.red,
+                                cursor: "pointer",
+                                padding: "2px 5px",
+                            }}
+                        >
+                            <Trash2 size={10} />
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={() => setEditModeSubId(null)}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                color: C.muted,
+                                cursor: "pointer",
+                                padding: 2,
+                            }}
+                        >
+                            <X size={11} />
+                        </motion.button>
+                    </motion.div>
+                ) : (
+                    <motion.button
+                        key="tab"
+                        {...lp}
+                        onClick={() => {
+                            setSelectedSubId(sub.id);
+                            setEditModeSubId(null);
+                        }}
+                        style={{
+                            padding: "7px 14px",
+                            borderRadius: 10,
+                            border: "none",
+                            cursor: "pointer",
+                            fontWeight: 800,
+                            fontSize: 12,
+                            whiteSpace: "nowrap",
+                            background: isSelected ? `${sub.color}28` : C.ghost,
+                            color: isSelected ? sub.color : C.muted,
+                            boxShadow: isSelected
+                                ? `0 0 0 1.5px ${sub.color}77`
+                                : `0 0 0 1px ${C.border}`,
+                            transition: "all 0.15s",
+                            userSelect: "none",
+                        }}
+                    >
+                        <span
+                            style={{
+                                display: "inline-block",
+                                width: 7,
+                                height: 7,
+                                borderRadius: "50%",
+                                background: sub.color,
+                                marginRight: 6,
+                                verticalAlign: "middle",
+                            }}
+                        />
+                        {sub.name}
+                    </motion.button>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }

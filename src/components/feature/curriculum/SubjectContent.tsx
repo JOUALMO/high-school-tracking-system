@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Plus } from "lucide-react";
 import { C, DAY_AR, DAY_NAMES } from "@/lib/constants";
 import { uid } from "@/lib/utils";
-import { Btn } from "@/components/ui/Shared";
+import { Btn, ConfirmModal } from "@/components/ui/Shared";
 import { UnitItem } from "./UnitItem";
 import { Subject } from "@/lib/types";
 
@@ -21,6 +21,7 @@ export function SubjectContent({
     const [expandedUnit, setExpandedUnit] = useState<string | null>(
         sub.units?.[0]?.id || null
     );
+    const [confirmDeleteUnit, setConfirmDeleteUnit] = useState<string | null>(null);
 
     const addUnit = () => {
         if (!newUnitName.trim()) return;
@@ -83,6 +84,13 @@ export function SubjectContent({
 
     return (
         <div>
+            <ConfirmModal
+                isOpen={!!confirmDeleteUnit}
+                title="Delete Unit"
+                message="Are you sure you want to delete this unit? All lessons inside will be permanently deleted."
+                onConfirm={() => confirmDeleteUnit && deleteUnit(confirmDeleteUnit)}
+                onCancel={() => setConfirmDeleteUnit(null)}
+            />
             {/* Subject summary + schedule days */}
             <div
                 style={{
@@ -169,7 +177,7 @@ export function SubjectContent({
                         setExpandedUnit={setExpandedUnit}
                         update={update}
                         onMoveUnit={(dir) => moveUnit(unit.id, dir)}
-                        onDeleteUnit={() => deleteUnit(unit.id)}
+                        onDeleteUnit={() => setConfirmDeleteUnit(unit.id)}
                         onRenameUnit={(name) => renameUnit(unit.id, name)}
                         onConfetti={onConfetti}
                     />

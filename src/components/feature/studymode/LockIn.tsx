@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+declare var window: any;
 import { motion } from "framer-motion";
 import { Lock, RefreshCw, X, Clock } from "lucide-react";
 import { C, BADGES } from "@/lib/constants";
@@ -32,12 +33,53 @@ export function LockIn({
     const pct = 1 - left / (dur * 60);
 
     useEffect(() => {
+        const saved = typeof window !== "undefined" ? window.localStorage.getItem("lockin_session") : null;
+        if (saved) {
+            try {
+                const { endTime, duration, subjectId } = JSON.parse(saved);
+                const now = Date.now();
+                if (endTime > now) {
+                    const remaining = Math.ceil((endTime - now) / 1000);
+                    setDur(duration);
+                    setLeft(remaining);
+                    setRunning(true);
+                    const sub = state.subjects.find((s: Subject) => s.id === subjectId);
+                    if (sub) setSelSub(sub);
+                } else {
+                    setDur(duration);
+                    setLeft(0);
+                    setRunning(true);
+                    const sub = state.subjects.find((s: Subject) => s.id === subjectId);
+                    if (sub) setSelSub(sub);
+                }
+            } catch (e) {
+                if (typeof window !== "undefined") window.localStorage.removeItem("lockin_session");
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
         if (running && left > 0) {
-            timerRef.current = setInterval(() => setLeft((t) => t - 1), 1000);
+            timerRef.current = setInterval(() => {
+                const saved = typeof window !== "undefined" ? window.localStorage.getItem("lockin_session") : null;
+                if (saved) {
+                    try {
+                        const { endTime } = JSON.parse(saved);
+                        const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+                        setLeft(remaining);
+                    } catch {
+                        setLeft((t) => t - 1);
+                    }
+                } else {
+                    setLeft((t) => t - 1);
+                }
+            }, 1000);
         } else if (left === 0 && running) {
             setRunning(false);
             setDone(true);
             setConfetti(true);
+            if (typeof window !== "undefined") window.localStorage.removeItem("lockin_session");
             update((s: any) => {
                 const bonusXP = Math.round(dur / 5) * 5;
                 const sessions = [
@@ -63,10 +105,43 @@ export function LockIn({
         setLeft(dur * 60);
         setDone(false);
         setRunning(true);
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("lockin_session", JSON.stringify({
+                endTime: Date.now() + (dur * 60 * 1000),
+                duration: dur,
+                subjectId: selSub?.id
+            }));
+        }
     };
     const stop = () => {
         setRunning(false);
-        setLeft(dur * 60);
+        if (typeof window !== "undefined") window.localStorage.removeItem("lockin_session");
+        
+        const elapsedSecs = dur * 60 - left;
+        const elapsedMins = Math.floor(elapsedSecs / 60);
+
+        if (elapsedMins >= 15) {
+            setDur(elapsedMins);
+            setLeft(0);
+            setDone(true);
+            setConfetti(true);
+            
+            update((s: any) => {
+                const bonusXP = Math.round(elapsedMins / 5) * 5;
+                const sessions = [
+                    ...(s.sessions || []),
+                    { id: uid(), subjectId: selSub?.id, duration: elapsedMins, date: today() },
+                ];
+                const ns = { ...s, sessions, xp: s.xp + bonusXP };
+                const earned = [...(s.earnedBadges || [])];
+                BADGES.forEach((b) => {
+                    if (!earned.includes(b.id) && b.req(ns)) earned.push(b.id);
+                });
+                return { ...ns, earnedBadges: earned };
+            });
+        } else {
+            setLeft(dur * 60);
+        }
     };
     const reset = () => {
         setDone(false);
