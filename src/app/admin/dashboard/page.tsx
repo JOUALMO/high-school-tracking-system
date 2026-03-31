@@ -31,12 +31,14 @@ import {
   getAdminCurricula,
   getAdminOverview,
   getAdminUsers,
+  getAdminUserProgress,
   updateAdminCurriculum,
   updateAdminCurriculumStatus,
   AdminCurriculaResponse,
   AdminCurriculumDetailsResponse,
   AdminOverviewResponse,
   AdminUsersResponse,
+  AdminUserProgressResponse,
 } from "@/lib/admin-client";
 
 type AdminTab = "overview" | "users" | "curricula" | "system";
@@ -71,6 +73,9 @@ export default function AdminDashboardPage() {
   const [savingCurriculum, setSavingCurriculum] = useState(false);
   const [deletingCurriculumId, setDeletingCurriculumId] = useState<string | null>(null);
   const [compact, setCompact] = useState(false);
+
+  const [viewingProgressUser, setViewingProgressUser] = useState<{ id: string; username: string } | null>(null);
+  const [userProgressData, setUserProgressData] = useState<AdminUserProgressResponse | "loading" | "error" | null>(null);
 
   useEffect(() => {
     const current = readAuthSession();
@@ -529,6 +534,7 @@ export default function AdminDashboardPage() {
                   search={search}
                   setSearch={setSearch}
                   loading={loading}
+                  routerPush={router.push}
                 />
               )}
               {activeTab === "curricula" && (
@@ -640,11 +646,13 @@ function UsersTab({
   search,
   setSearch,
   loading,
+  routerPush,
 }: {
   users: AdminUsersResponse["items"];
   search: string;
   setSearch: (value: string) => void;
   loading: boolean;
+  routerPush: (path: string) => void;
 }) {
   return (
     <div style={{ display: "grid", gap: 10 }}>
@@ -705,8 +713,26 @@ function UsersTab({
                   Curriculum: {user.selectedCurriculumId || "None"}
                 </div>
               </div>
-              <div style={{ color: C.indigo, fontSize: 11, fontWeight: 700 }}>
-                {new Date(user.createdAt).toLocaleDateString()}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+                <div style={{ color: C.indigo, fontSize: 11, fontWeight: 700 }}>
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </div>
+                <button
+                  onClick={() => routerPush(`/admin/users/${user.id}`)}
+                  title="View Progress"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    color: C.green,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 4,
+                  }}
+                >
+                  <Eye size={16} />
+                </button>
               </div>
             </motion.div>
           ))}

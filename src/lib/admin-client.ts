@@ -1,4 +1,5 @@
 import { apiRequest } from "@/lib/auth-client";
+import { AppState } from "@/lib/types";
 
 export interface AdminOverviewResponse {
   metrics: {
@@ -34,6 +35,11 @@ export interface AdminUsersResponse {
     createdAt: string;
     updatedAt: string;
   }>;
+}
+
+export interface AdminUserProgressResponse {
+  backupAt: string | null;
+  state: AppState | null;
 }
 
 export interface AdminCurriculaResponse {
@@ -75,6 +81,10 @@ export function getAdminOverview() {
 
 export function getAdminUsers() {
   return apiRequest<AdminUsersResponse>("/admin/users");
+}
+
+export function getAdminUserProgress(userId: string) {
+  return apiRequest<AdminUserProgressResponse>(`/admin/users/${userId}/progress`);
 }
 
 export function getAdminCurricula() {
