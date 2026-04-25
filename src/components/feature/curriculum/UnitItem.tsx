@@ -99,6 +99,7 @@ export function UnitItem({
         };
         let xpDelta = 0,
             xpDay = "",
+            ctDelta = 0,
             completed = false;
 
         update((s: any) => {
@@ -116,14 +117,20 @@ export function UnitItem({
                                 const nxt = cyc[l.status];
                                 let updatedL = { ...l, status: nxt };
 
-                                if (l.status === "solved" && nxt === "done") {
+                                if (l.status === "pending" && nxt === "explained") {
                                     xpDelta = l.xp;
                                     xpDay = todayDay;
+                                    ctDelta = 1;
+                                } else if (l.status === "solved" && nxt === "done") {
+                                    xpDelta = l.xp;
+                                    xpDay = todayDay;
+                                    ctDelta = 1;
                                     completed = true;
                                     updatedL.completedAt = todayDay;
                                 } else if (l.status === "done" && nxt === "pending") {
-                                    xpDelta = -l.xp;
+                                    xpDelta = -(l.xp * 2);
                                     xpDay = l.completedAt || todayDay;
+                                    ctDelta = -2;
                                     updatedL.completedAt = undefined;
                                 }
                                 return updatedL;
@@ -144,14 +151,12 @@ export function UnitItem({
                     wk[wi] = {
                         ...wk[wi],
                         xp: Math.max(0, wk[wi].xp + xpDelta),
-                        lessons: Math.max(0, wk[wi].lessons + (xpDelta > 0 ? 1 : -1)),
+                        lessons: Math.max(0, wk[wi].lessons + ctDelta),
                     };
                 }
             }
 
-            const newCT = xpDelta > 0 && xpDay === todayDay ? s.completedToday + 1 :
-                xpDelta < 0 && xpDay === todayDay ? Math.max(0, s.completedToday - 1) :
-                    s.completedToday;
+            const newCT = xpDay === todayDay ? Math.max(0, s.completedToday + ctDelta) : s.completedToday;
 
             const ns = {
                 ...s,
