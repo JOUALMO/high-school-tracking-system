@@ -31,8 +31,10 @@ export function Dashboard({
 }) {
     const allLessons = allLessonsOf(state);
     const done = allLessons.filter((l) => l.status === "done").length;
+    const explained = allLessons.filter((l) => l.status === "explained" || l.status === "done").length;
     const total = allLessons.length;
     const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    const epct = total > 0 ? Math.round((explained / total) * 100) : 0;
     const circ = 2 * Math.PI * 38;
     const todayIdx = new Date().getDay();
 
@@ -172,7 +174,7 @@ export function Dashboard({
 
             {/* Progress ring + Weekly chart */}
             <div
-                style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 12 }}
+                style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
             >
                 <Card
                     delay={4}
@@ -249,7 +251,82 @@ export function Dashboard({
                         {done}/{total} done
                     </div>
                 </Card>
-                <Card delay={5} style={{ padding: 14 }}>
+                <Card
+                    delay={4}
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 16,
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: 10,
+                            color: C.muted,
+                            marginBottom: 6,
+                            fontWeight: 700,
+                            letterSpacing: 0.5,
+                        }}
+                    >
+                        CURRICULUM
+                    </div>
+                    <div style={{ position: "relative", width: 96, height: 96 }}>
+                        <svg width="96" height="96">
+                            <circle
+                                cx="48"
+                                cy="48"
+                                r="38"
+                                fill="none"
+                                stroke={C.border}
+                                strokeWidth="7"
+                            />
+                            <motion.circle
+                                cx="48"
+                                cy="48"
+                                r="38"
+                                fill="none"
+                                stroke={C.explained}
+                                strokeWidth="7"
+                                strokeLinecap="round"
+                                initial={{
+                                    strokeDashoffset: circ,
+                                    strokeDasharray: `${circ} ${circ}`,
+                                }}
+                                animate={{ strokeDashoffset: circ - (epct / 100) * circ }}
+                                transition={{ duration: 1.3, delay: 0.5, ease: "easeOut" }}
+                                style={{
+                                    transform: "rotate(-90deg)",
+                                    transformOrigin: "48px 48px",
+                                }}
+                            />
+                        </svg>
+                        <div
+                            style={{
+                                position: "absolute",
+                                inset: 0,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.9 }}
+                                style={{ fontSize: 18, fontWeight: 900, color: C.explained }}
+                            >
+                                {epct}%
+                            </motion.span>
+                        </div>
+                    </div>
+                    <div style={{ fontSize: 10, color: C.muted, marginTop: 5 }}>
+                        {explained}/{total} explained
+                    </div>
+                </Card>
+                <Card delay={5} style={{ padding: 14, gridColumn: "span 2" }}>
                     <div
                         style={{
                             fontSize: 10,

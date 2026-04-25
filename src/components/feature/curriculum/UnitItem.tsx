@@ -241,6 +241,7 @@ export function UnitItem({
     };
 
     const done = unit.lessons.filter((l) => l.status === "done").length;
+    const explained = unit.lessons.filter((l) => l.status === "explained" || l.status === "done").length;
     const total = unit.lessons.length;
 
     return (
@@ -413,6 +414,7 @@ export function UnitItem({
                     {total > 0 && !editMode && (
                         <div
                             style={{
+                                position: "relative",
                                 height: 2,
                                 background: C.border,
                                 borderRadius: 99,
@@ -421,10 +423,28 @@ export function UnitItem({
                         >
                             <motion.div
                                 initial={{ width: 0 }}
+                                animate={{ width: `${Math.round((explained / total) * 100)}%` }}
+                                transition={{ duration: 0.5 }}
+                                style={{
+                                    position: "absolute",
+                                    left: 0,
+                                    top: 0,
+                                    background: subColor,
+                                    opacity: 0.5,
+                                    height: "100%",
+                                    borderRadius: 99,
+                                }}
+                            />
+                            <motion.div
+                                initial={{ width: 0 }}
                                 animate={{ width: `${Math.round((done / total) * 100)}%` }}
                                 transition={{ duration: 0.5 }}
                                 style={{
+                                    position: "absolute",
+                                    left: 0,
+                                    top: 0,
                                     background: subColor,
+                                    boxShadow: `0 0 2px ${subColor}`,
                                     height: "100%",
                                     borderRadius: 99,
                                 }}

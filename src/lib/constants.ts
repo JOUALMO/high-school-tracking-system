@@ -7,6 +7,7 @@ export const C = {
     card: "#11111c",
     border: "#1c1c2e",
     accent: "#f59e0b",
+    explained: "rgba(11, 171, 245, 1)",
     indigo: "#818cf8",
     green: "#34d399",
     red: "#f87171",
