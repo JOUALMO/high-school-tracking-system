@@ -31,7 +31,7 @@ export function Dashboard({
 }) {
     const allLessons = allLessonsOf(state);
     const done = allLessons.filter((l) => l.status === "done").length;
-    const explained = allLessons.filter((l) => l.status === "explained" || l.status === "done").length;
+    const explained = allLessons.filter((l) => ["explained", "solving", "done"].includes(l.status)).length;
     const total = allLessons.length;
     const pct = total > 0 ? Math.round((done / total) * 100) : 0;
     const epct = total > 0 ? Math.round((explained / total) * 100) : 0;
